@@ -1,13 +1,64 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>%VITE_APP_TITLE_SHORT%</title>
   </head>
   <body>
-    <div id="app"></div>
-    <canvas id="canvas"></canvas>
+    <div id="app">
+      <header>
+        <nav>
+          <h1 style="padding-left: 1rem">%VITE_APP_TITLE%</h1>
+          <button onclick="toggleDarkMode()" style="margin: 1.5rem;">Toggle Theme</button>
+        </nav>
+      </header>
+      <div class="dropdown-container">
+        <label for="algo-list">List of available algorithms</label>
+        <select name="" id="algo-list">
+          <option value="RECURSIVE_BACKTRACKER" selected>Resursive Backtrack</option>
+          <option value="PRIMS">Prims Algorithm</option>
+          <option value="KRUSKALS">Kruskals Algorithm</option>
+          <option value="WILSONS">Wilsons Algorithm</option>
+        </select>
+      </div>
+      <div class="slider">
+        <input type="range" id="speed" name="simulation speed slider" min="0" max="1000" value="20"/> 
+        <label for="speed">Simulation Speed</label>
+      </div>
+
+      <div id="canvas-container">
+        <h2 id="maze-title"></h2>
+        <canvas id="canvas"></canvas>
+      </div>
+      <script>
+        document.documentElement.classList.add(localStorage.getItem("theme"));
+        function toggleDarkMode() {
+          if (document.documentElement.classList.contains("light")) {
+            localStorage.setItem("theme", "dark");
+            document.documentElement.classList.remove("light");
+            document.documentElement.classList.add("dark");
+          } else if (document.documentElement.classList.contains("dark")) {
+            localStorage.setItem("theme", "light");
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.add("light");
+          } else {
+            if (
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+            ) {
+              document.documentElement.classList.add("dark");
+            } else {
+              document.documentElement.classList.add("light");
+            }
+          }
+        }
+      </script>
+      <p id="project-description">
+        Hello, here is a quick little project I had been wanting to finish for a while now. Description incoming...
+      </p>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

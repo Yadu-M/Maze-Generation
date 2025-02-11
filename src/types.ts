@@ -1,14 +1,13 @@
-export type gridT = {
-  ctx: CanvasRenderingContext2D
-  readonly rowColCount: number
-  readonly cellSize: number
-  cells: cellT[][]
+export type directionT = "North" | "East" | "South" | "West";
+export enum algoList {
+  RECURSIVE_BACKTRACKER = "RECURSIVE_BACKTRACKER",
+  PRIMS = "PRIMS",
+  KRUSKALS = "KRUSKALS",
+  WILSONS = "WILSONS",
 }
-
-export type cellT = {
-  state: boolean
-  readonly x: number
-  readonly y: number
+export type algoListValues = (typeof algoList)[keyof typeof algoList];
+export interface mazeT {
+  CELL_SIZE: number;
+  GRID_SIZE: number;
+  SPEED: number;
 }
-
-// export type dir = "North" | "East" | "South" | "West"

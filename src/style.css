@@ -1,16 +1,55 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: monospace, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 100;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --tea-green: #c9e4caff;
+  --cambridge-blue: #87bba2ff;
+  --blue-munsell: #55828bff;
+  --dark-slate-gray: #3b6064ff;
+  --charcoal: #364958ff;
+}
+
+/* Automatic/manual light mode */
+:root,
+:root.light {
+  --default-color: var(--dark-slate-gray);
+  --default-bg: var(--tea-green);
+
+  --btn-color: var(--charcoal);
+  --btn-bg: var(--cambridge-blue);
+  --btn-hover: var(--charcoal);
+}
+
+/* Manual dark mode */
+:root.dark {
+  --default-color: var(--cambridge-blue);
+  --default-bg: var(--charcoal);
+
+  --btn-color: var(--charcoal);
+  --btn-bg: var(--cambridge-blue);
+  --btn-hover: var(--tea-green);
+}
+
+body {
+  color: var(--default-color); /* Apply the color variable */
+  background-color: var(--default-bg); /* Apply the bg variable */
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* overflow: hidden; */
+  height: 100%;
 }
 
 a {
@@ -23,43 +62,121 @@ a:hover {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: large;
   line-height: 1.1;
 }
 
 button {
+  width: fit-content;
+  height: fit-content;
   border-radius: 8px;
-  border: 1px solid transparent;
+  /* border: 1px solid transparent; */
   padding: 0.6em 1.2em;
-  font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--btn-color);
+  background-color: var(--btn-bg);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--btn-hover);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-canvas {
-  display: block;
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#canvas-container {
+  margin: 2em 0;
   text-align: center;
 }
 
-/* @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+#project-description {
+  padding: 2em;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: larger;
   }
-  a:hover {
-    color: #747bff;
+
+  h2 {
+    font-size: large;
   }
+
   button {
-    background-color: #f9f9f9;
+    font-size: xx-small;
   }
-} */
+
+  p {
+    font-size: medium;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  h1 {
+    font-size: larger;
+  }
+
+  h2 {
+    font-size: large;
+  }
+
+  button {
+    font-size: xx-small;
+  }
+
+  p {
+    font-size: medium;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  h1 {
+    font-size: x-large;
+  }
+
+  h2 {
+    font-size: larger;
+  }
+
+  button {
+    font-size: x-small;
+  }
+
+  p {
+    font-size: large;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  h1 {
+    font-size: xx-large;
+  }
+
+  h2 {
+    font-size: x-large;
+  }
+
+  button {
+    font-size: medium;
+  }
+
+  p {
+    font-size: larger;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+/* @media only screen and (min-width: 1200px) {...}  */
