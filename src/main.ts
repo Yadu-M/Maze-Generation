@@ -1,18 +1,19 @@
 import "./style.css";
 import { recursiveBacktracker } from "./algos/recursive_backtrack";
-import { algoList, type algoListValues } from "./types";
+import { algoList, type algoListValues, type mazeT } from "./types";
 import { LINE_WIDTH } from "./config";
 import { clearCanvas } from "./utils";
 
-const DEFAULT_GRID_SIZE = 25; // Use a constant for the default
-const DEFAULT_SPEED = 20; // Use a constant for the default
+const DEFAULT_GRID_SIZE = 25;
+const DEFAULT_SPEED = 20;
+const DEFAULT_CELL_SIZE = 10;
 
 async function main() {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const selectE = document.getElementById("algo-list") as HTMLSelectElement;
   const speedE = document.getElementById("speed") as HTMLInputElement;
   const algorithmTitle = document.getElementById(
-    "maze-title"
+    "maze-title",
   ) as HTMLHeadingElement;
 
   const ctx = canvas?.getContext("2d");
@@ -22,38 +23,29 @@ async function main() {
     return; // Exit early if elements are missing
   }
 
+  console.log("APP LOADED");
+
+  // Init variables
+
   let GRID_SIZE = DEFAULT_GRID_SIZE;
   let SPEED = DEFAULT_SPEED;
-
-  // -- Prioritize Slider Value --
-  // Use slider's value if it's been set *before* main runs (on page load)
-  if (speedE.value !== "") {
-    SPEED = speedE.valueAsNumber;
-    console.log("Initial speed from slider:", SPEED);
-  } else {
-    console.log("Using default speed:", SPEED);
-  }
-
-  let CELL_SIZE = 0; // Initialize CELL_SIZE.  Will be set in handleCanvasSize.
-  let MAZE_CONFIG = {
-    // Initialise maze config
-    CELL_SIZE, //CELL_SIZE gets initialised during the initialisation
-    GRID_SIZE,
-    SPEED,
+  let CELL_SIZE = DEFAULT_CELL_SIZE;
+  let MAZE_CONFIG: mazeT = {
+    getCellSize: () => CELL_SIZE,
+    getGridSize: () => GRID_SIZE,
+    getCurrentSpeed: () => SPEED,
   };
+
   let currentController: AbortController | null = null;
+
+  // Helper functions
 
   const setAlgoTitle = (title: string) => {
     algorithmTitle.innerHTML = title;
   };
 
-  const updateMazeConfig = (newConfig: Partial<typeof MAZE_CONFIG>) => {
-    MAZE_CONFIG = { ...MAZE_CONFIG, ...newConfig };
-    console.log("Maze config updated:", MAZE_CONFIG); // Log the updated config
-  };
-
   const handleAlgoSelect = (
-    selectE: HTMLSelectElement
+    selectE: HTMLSelectElement,
   ): algoListValues | null => {
     const selectedVal = selectE.value;
 
@@ -66,11 +58,11 @@ async function main() {
 
   const handleCanvasSize = (canvas: HTMLCanvasElement) => {
     const constraint = Math.min(window.innerHeight, window.innerWidth);
-    const newCellSize = Math.round((constraint - constraint / 3.5) / GRID_SIZE);
+    const newCellSize = Math.round((constraint - constraint / 3.5) / GRID_SIZE); // 3.5 as a scaling value to restrict padding in smaller screens
 
     canvas.width = newCellSize * GRID_SIZE + LINE_WIDTH;
     canvas.height = newCellSize * GRID_SIZE + LINE_WIDTH;
-    CELL_SIZE = newCellSize; //update CELL_SIZE
+    CELL_SIZE = newCellSize;
     return newCellSize;
   };
 
@@ -98,12 +90,8 @@ async function main() {
     const signal = currentController.signal;
 
     try {
-      //Before running the maze, update the maze config, otherwise it will use the old cell size
-      updateMazeConfig({ CELL_SIZE: handleCanvasSize(canvas) });
-      console.log(
-        "MAZE_CONFIG.SPEED after handleCanvasSize:",
-        MAZE_CONFIG.SPEED
-      ); //Added console log.
+      CELL_SIZE = handleCanvasSize(canvas);
+      // updateMazeConfig({ CELL_SIZE: handleCanvasSize(canvas) });
       switch (chosenAlgo) {
         case "RECURSIVE_BACKTRACKER":
           await recursiveBacktracker({ ctx, mazeConfig: MAZE_CONFIG, signal });
@@ -127,7 +115,7 @@ async function main() {
       } else {
         console.error(
           `Something went wrong while ${chosenAlgo} was running: `,
-          error
+          error,
         );
         clearCanvas(ctx);
       }
@@ -137,51 +125,35 @@ async function main() {
   };
 
   const handleSpeed = () => {
-    SPEED = speedE.valueAsNumber; // Get the number value
-    updateMazeConfig({ SPEED }); // Pass {SPEED} to update the config
-  };
-
-  const handleGridSize = () => {
-    GRID_SIZE = Number(
-      prompt("Enter the grid size: ", String(GRID_SIZE)) || GRID_SIZE
-    ); // if the prompt is null or empty, then use previous grid size;
-
-    MAZE_CONFIG.GRID_SIZE = GRID_SIZE;
-    handleCanvasSize(canvas); //after the grid size has been updated, recalculate cell size.
+    SPEED = 250 - speedE.valueAsNumber; // 500 ms is the slowest speed
+    console.log(SPEED, speedE.valueAsNumber);
   };
 
   // ---- Initialization ----
-  let initController: AbortController | null = new AbortController();
 
-  console.log("APP LOADED");
-  setAlgoTitle("Algorithm: Recursive Backtracker");
-
-  CELL_SIZE = handleCanvasSize(canvas);
-  MAZE_CONFIG = {
-    CELL_SIZE,
-    GRID_SIZE,
-    SPEED,
-  };
-
+  // Attack listeners
   selectE.addEventListener("change", handleAlgoChange);
   speedE.addEventListener("change", handleSpeed);
 
-  handleSpeed();
+  let initController: AbortController | null = new AbortController(); // Temp controller for initial run
 
-  updateMazeConfig({ CELL_SIZE: handleCanvasSize(canvas) });
+  // Setting speed based on slider value
+  if (speedE.value !== "") {
+    SPEED = speedE.valueAsNumber;
+    console.log("Initial speed from slider:", SPEED);
+  } else {
+    console.log("Using default speed:", SPEED);
+  }
+
+  setAlgoTitle("Algorithm: Recursive Backtracker");
+
+  CELL_SIZE = handleCanvasSize(canvas);
+
   await recursiveBacktracker({
     ctx,
     mazeConfig: MAZE_CONFIG,
-    signal: initController.signal, // You cannot reuse a signal!
+    signal: initController.signal,
   });
-
-  //Attach grid Size Listener
-
-  const gridSizeInput = document.getElementById(
-    "grid-size"
-  ) as HTMLInputElement;
-
-  gridSizeInput?.addEventListener("click", handleGridSize);
 }
 
 document.addEventListener("DOMContentLoaded", main);

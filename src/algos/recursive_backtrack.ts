@@ -1,3 +1,4 @@
+// recursive_backtrack.ts
 import { Cell } from "../cell";
 import { drawGrid, Grid } from "../grid";
 import type { mazeT } from "../types";
@@ -15,18 +16,29 @@ export async function recursiveBacktracker({
   mazeConfig: mazeT;
   signal: AbortSignal;
 }) {
-  const { GRID_SIZE, CELL_SIZE } = mazeConfig;
-  const INITIAL_COLOR = "aqua";
+  const { getCellSize, getCurrentSpeed, getGridSize } = mazeConfig;
+  const FALLBACK_COLOR = "aqua";
+  const ACTIVE_CELL_COLOR = "red";
   const COLOR = "green";
 
-  drawGrid(ctx, GRID_SIZE, CELL_SIZE);
+  console.log(
+    "mazeConfig.SPEED inside recursiveBacktracker:",
+    getCurrentSpeed(),
+  );
 
-  const grid = new Grid(GRID_SIZE, GRID_SIZE, CELL_SIZE, INITIAL_COLOR);
+  drawGrid(ctx, getGridSize(), getCellSize());
+
+  const grid = new Grid(
+    getGridSize(),
+    getGridSize(),
+    getCellSize(),
+    FALLBACK_COLOR,
+  );
   const cells = grid.getCells();
 
   // Initializing, pick top left as starting point
   const root = cells[0]?.[0];
-  const randomNeighbour = root?.getNeighbours()[Math.floor(Math.random() * 2)];
+  const randomNeighbour = root?.getNeighbours()[Math.floor(Math.random() * 2)]; // Only two possible neighbours anyways
   root?.setVisited(true);
   root?.addChild(randomNeighbour!);
 
@@ -35,15 +47,17 @@ export async function recursiveBacktracker({
    * @param cell Current cell
    * @returns recursive calls until root is reached (base case)
    */
-  const renderPath = async (cell: Cell) => {
-    console.log(`Speed from renderer: ${mazeConfig.SPEED}`);
-    // debugger;
+  const renderPath = async (cell: Cell, currentMazeConfig: mazeT) => {
     if (signal.aborted) {
       clearCanvas(ctx);
       return;
     }
 
-    await cell.draw({ ctx, speed: mazeConfig.SPEED, color: "red" });
+    await cell.draw({
+      ctx,
+      speed: getCurrentSpeed(),
+      color: ACTIVE_CELL_COLOR,
+    });
     if (cell === root) return;
 
     const neighbours = cell
@@ -55,23 +69,31 @@ export async function recursiveBacktracker({
 
     if (!randNeighbour) {
       cell.setVisited(true);
-      await cell.draw({ ctx, speed: mazeConfig.SPEED, color: COLOR });
-      return renderPath(cell.getParent()!);
+      await cell.draw({
+        ctx,
+        speed: getCurrentSpeed(),
+        color: COLOR,
+      });
+      return renderPath(cell.getParent()!, currentMazeConfig);
     }
 
     cell.addChild(randNeighbour);
     cell.setVisited(true);
 
     (
-      await cell.draw({ ctx, speed: mazeConfig.SPEED, color: COLOR })
+      await cell.draw({
+        ctx,
+        speed: getCurrentSpeed(),
+        color: COLOR,
+      })
     ).removeWall({
       wall: cell.getRelativeWallDir(randNeighbour)!,
       ctx,
       color: COLOR,
     });
 
-    await renderPath(randNeighbour);
+    await renderPath(randNeighbour, currentMazeConfig);
   };
 
-  await renderPath(randomNeighbour!);
+  await renderPath(randomNeighbour!, mazeConfig);
 }

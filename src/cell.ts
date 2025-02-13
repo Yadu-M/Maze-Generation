@@ -1,9 +1,10 @@
 import { LINE_WIDTH } from "./config";
-import type { directionT } from "./types";
+import type { directionT, mazeT } from "./types";
 
 export class Cell {
   private readonly x;
   private readonly y;
+  private readonly FALLBACK_SPEED = 100;
   private parent: Cell | null;
   private children: Cell[] | null;
   private CELL_SIZE = 20;
@@ -69,13 +70,13 @@ export class Cell {
     return null;
   }
 
-  draw({
+  async draw({
     ctx,
-    speed = 100,
+    speed, // Only keep mazeConfig parameter
     color = this.COLOR,
   }: {
     ctx: CanvasRenderingContext2D;
-    speed?: number;
+    speed: number; // Type it as mazeT
     color?: string;
   }): Promise<this> {
     return new Promise((resolve) => {
@@ -86,12 +87,12 @@ export class Cell {
           this.CELL_SIZE * this.x + 1,
           this.CELL_SIZE * this.y + 1,
           this.CELL_SIZE - LINE_WIDTH,
-          this.CELL_SIZE - LINE_WIDTH
+          this.CELL_SIZE - LINE_WIDTH,
         );
         ctx.fill();
         ctx.closePath();
         resolve(this);
-      }, speed);
+      }, speed ?? this.FALLBACK_SPEED); // Use currentSpeed directly - NO fallback for now
     });
   }
 
@@ -116,7 +117,7 @@ export class Cell {
           this.x * this.CELL_SIZE + 1,
           this.y * this.CELL_SIZE - 1,
           this.CELL_SIZE - LINE_WIDTH,
-          LINE_WIDTH
+          LINE_WIDTH,
         );
         break;
       case "East":
@@ -124,7 +125,7 @@ export class Cell {
           (this.x + 1) * this.CELL_SIZE - 1,
           this.y * this.CELL_SIZE + 1,
           LINE_WIDTH,
-          this.CELL_SIZE - LINE_WIDTH
+          this.CELL_SIZE - LINE_WIDTH,
         );
         break;
       case "South":
@@ -132,7 +133,7 @@ export class Cell {
           this.x * this.CELL_SIZE + 1,
           (this.y + 1) * this.CELL_SIZE - 1,
           this.CELL_SIZE - LINE_WIDTH,
-          LINE_WIDTH
+          LINE_WIDTH,
         );
         break;
       case "West":
@@ -140,7 +141,7 @@ export class Cell {
           this.x * this.CELL_SIZE - 1,
           this.y * this.CELL_SIZE + 1,
           LINE_WIDTH,
-          this.CELL_SIZE - LINE_WIDTH
+          this.CELL_SIZE - LINE_WIDTH,
         );
         break;
 

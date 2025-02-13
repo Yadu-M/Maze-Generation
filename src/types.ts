@@ -7,7 +7,7 @@ export enum algoList {
 }
 export type algoListValues = (typeof algoList)[keyof typeof algoList];
 export interface mazeT {
-  CELL_SIZE: number;
-  GRID_SIZE: number;
-  SPEED: number;
+  getCellSize: () => number;
+  getGridSize: () => number;
+  getCurrentSpeed: () => number;
 }

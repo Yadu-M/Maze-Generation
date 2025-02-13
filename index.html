@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,20 +10,31 @@
       <header>
         <nav>
           <h1 style="padding-left: 1rem">Maze Generator</h1>
-          <button onclick="toggleDarkMode()" style="margin: 1.5rem;">Toggle Theme</button>
+          <button onclick="toggleDarkMode()" style="margin: 1.5rem">
+            Toggle Theme
+          </button>
         </nav>
       </header>
       <div class="dropdown-container">
         <label for="algo-list">List of available algorithms</label>
         <select name="" id="algo-list">
-          <option value="RECURSIVE_BACKTRACKER" selected>Resursive Backtrack</option>
+          <option value="RECURSIVE_BACKTRACKER" selected>
+            Resursive Backtrack
+          </option>
           <option value="PRIMS">Prims Algorithm</option>
           <option value="KRUSKALS">Kruskals Algorithm</option>
           <option value="WILSONS">Wilsons Algorithm</option>
         </select>
       </div>
       <div class="slider">
-        <input type="range" id="speed" name="simulation speed slider" min="0" max="1000" value="20"/> 
+        <input
+          type="range"
+          id="speed"
+          name="simulation speed slider"
+          min="0"
+          max="250"
+          value="20"
+        />
         <label for="speed">Simulation Speed</label>
       </div>
 
@@ -55,7 +66,8 @@
         }
       </script>
       <p id="project-description">
-        Hello, here is a quick little project I had been wanting to finish for a while now. Description incoming...
+        Hello, here is a quick little project I had been wanting to finish for a
+        while now. Description incoming...
       </p>
     </div>
 

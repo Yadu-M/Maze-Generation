@@ -1,4 +1,5 @@
 import { Cell } from "./cell";
+import { LINE_WIDTH } from "./config";
 
 export class Grid {
   private cells: Cell[][] = [];
@@ -33,10 +34,10 @@ export class Grid {
 export function drawGrid(
   ctx: CanvasRenderingContext2D,
   GRID_SIZE: number,
-  CELL_SIZE: number
+  CELL_SIZE: number,
 ) {
   ctx.translate(1, 1);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = LINE_WIDTH;
   // Drawing rows
   for (let i = 0; i <= GRID_SIZE; ++i) {
     ctx.beginPath();
