@@ -124,19 +124,11 @@ async function main() {
 
   // ---- Initialization ----
 
-  // Attack listeners
+  // Attach listeners
   selectE.addEventListener("change", handleAlgoChange);
   speedE.addEventListener("change", handleSpeed);
 
   let initController: AbortController | null = new AbortController(); // Temp controller for initial run
-
-  // Setting speed based on slider value
-  if (speedE.value !== "") {
-    SPEED = speedE.valueAsNumber;
-    console.log("Initial speed from slider:", SPEED);
-  } else {
-    console.log("Using default speed:", SPEED);
-  }
 
   setAlgoTitle("Algorithm: Recursive Backtracker");
 

@@ -16,7 +16,6 @@ export async function recursiveBacktracker({
   mazeConfig: mazeT;
   signal: AbortSignal;
 }) {
-  // clearCanvas(ctx);
   const { getCellSize, getCurrentSpeed, getGridSize } = mazeConfig;
   const FALLBACK_COLOR = "aqua";
   const ACTIVE_CELL_COLOR = "red";
