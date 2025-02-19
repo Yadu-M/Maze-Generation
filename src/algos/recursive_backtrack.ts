@@ -16,24 +16,17 @@ export async function recursiveBacktracker({
   mazeConfig: mazeT;
   signal: AbortSignal;
 }) {
+  // clearCanvas(ctx);
   const { getCellSize, getCurrentSpeed, getGridSize } = mazeConfig;
   const FALLBACK_COLOR = "aqua";
   const ACTIVE_CELL_COLOR = "red";
   const COLOR = "green";
+  const abortMessage = "Aborted from Recrusive Backtracker";
 
-  console.log(
-    "mazeConfig.SPEED inside recursiveBacktracker:",
-    getCurrentSpeed(),
-  );
-
-  drawGrid(ctx, getGridSize(), getCellSize());
+  drawGrid({ ctx, GRID_SIZE: getGridSize(), CELL_SIZE: getCellSize() });
 
   const grid = new Grid(
-    getGridSize(),
-    getGridSize(),
-    getCellSize(),
-    FALLBACK_COLOR,
-  );
+    { rows: getGridSize(), cols: getGridSize(), cellSize: getCellSize(), cellColor: FALLBACK_COLOR }  );
   const cells = grid.getCells();
 
   // Initializing, pick top left as starting point
@@ -58,6 +51,7 @@ export async function recursiveBacktracker({
       speed: getCurrentSpeed(),
       color: ACTIVE_CELL_COLOR,
     });
+
     if (cell === root) return;
 
     const neighbours = cell
@@ -95,5 +89,16 @@ export async function recursiveBacktracker({
     await renderPath(randNeighbour, currentMazeConfig);
   };
 
-  await renderPath(randomNeighbour!, mazeConfig);
+  return new Promise<void>(async (resolve, reject) => {
+    signal.addEventListener("abort", () => {
+      reject(new Error(abortMessage));
+    });
+
+    try {
+      await renderPath(randomNeighbour!, mazeConfig);
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

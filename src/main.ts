@@ -3,6 +3,7 @@ import { recursiveBacktracker } from "./algos/recursive_backtrack";
 import { algoList, type algoListValues, type mazeT } from "./types";
 import { LINE_WIDTH } from "./config";
 import { clearCanvas } from "./utils";
+import { prims } from "./algos/prims";
 
 const DEFAULT_GRID_SIZE = 25;
 const DEFAULT_SPEED = 20;
@@ -13,7 +14,7 @@ async function main() {
   const selectE = document.getElementById("algo-list") as HTMLSelectElement;
   const speedE = document.getElementById("speed") as HTMLInputElement;
   const algorithmTitle = document.getElementById(
-    "maze-title",
+    "maze-title"
   ) as HTMLHeadingElement;
 
   const ctx = canvas?.getContext("2d");
@@ -45,7 +46,7 @@ async function main() {
   };
 
   const handleAlgoSelect = (
-    selectE: HTMLSelectElement,
+    selectE: HTMLSelectElement
   ): algoListValues | null => {
     const selectedVal = selectE.value;
 
@@ -91,13 +92,12 @@ async function main() {
 
     try {
       CELL_SIZE = handleCanvasSize(canvas);
-      // updateMazeConfig({ CELL_SIZE: handleCanvasSize(canvas) });
       switch (chosenAlgo) {
         case "RECURSIVE_BACKTRACKER":
           await recursiveBacktracker({ ctx, mazeConfig: MAZE_CONFIG, signal });
           break;
         case "PRIMS":
-          // TODO
+          await prims({ ctx, mazeConfig: MAZE_CONFIG, signal });
           break;
         case "KRUSKALS":
           // TODO
@@ -110,17 +110,10 @@ async function main() {
           console.error("Something went wrong");
       }
     } catch (error: any) {
-      if (error.name === "AbortError") {
-        console.log("Algorithm Aborted:", error.message);
-      } else {
-        console.error(
-          `Something went wrong while ${chosenAlgo} was running: `,
-          error,
-        );
-        clearCanvas(ctx);
-      }
+      console.log("Algorithm Aborted:", error.message);
     } finally {
-      currentController = null; // Always reset the controller
+      currentController = null;
+      clearCanvas(ctx);
     }
   };
 
@@ -149,11 +142,15 @@ async function main() {
 
   CELL_SIZE = handleCanvasSize(canvas);
 
-  await recursiveBacktracker({
-    ctx,
-    mazeConfig: MAZE_CONFIG,
-    signal: initController.signal,
-  });
+  try {
+    await recursiveBacktracker({
+      ctx,
+      mazeConfig: MAZE_CONFIG,
+      signal: initController.signal,
+    });
+  } catch (error: any) {
+    console.log(error.message);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", main);
